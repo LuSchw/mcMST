@@ -210,7 +210,7 @@ public:
     for (u = 1; u <= V; ++u) {
       // std::cout << "u = " << u << std::endl;
 
-      for (int j = 0; j < g1.adjList[u].size(); ++j) {
+      for (unsigned int j = 0; j < g1.adjList[u].size(); ++j) {
         // std::cout << "j = " << j << std::endl;
 
         unsigned int v = g1.adjList[u][j].first;
@@ -230,7 +230,7 @@ public:
     assert(g1.getV() == g2.getV());
     assert(g1.getW() == g2.getW());
 
-    int V = g1.getV();
+    unsigned int V = g1.getV();
 
     // std::cout << "Intersection of graphs with " << V << " nodes" << std::endl;
     // bare skeleton
@@ -242,7 +242,7 @@ public:
     unsigned int u;
     for (u = 1; u <= V; ++u) {
       // std::cout << "u = " << u << std::endl;
-      for (int j = 0; j < g2.adjList[u].size(); ++j) {
+      for (unsigned int j = 0; j < g2.adjList[u].size(); ++j) {
         // std::cout << "j = " << j << std::endl;
         unsigned int v = g2.adjList[u][j].first;
         if (!g.hasEdge(u, v)) {
@@ -300,7 +300,7 @@ public:
     assert(u >= 1 && u <= this->V);
     assert(v >= 1 && u <= this->V);
 
-    for (int j = 0; j < this->adjList[u].size(); ++j) {
+    for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
       if (this->adjList[u][j].first == v) {
         // this is ugly!
         this->adjList[u].erase(this->adjList[u].begin() + j);
@@ -311,7 +311,7 @@ public:
     }
 
     if (!this->directed) {
-      for (int j = 0; j < this->adjList[v].size(); ++j) {
+      for (unsigned int j = 0; j < this->adjList[v].size(); ++j) {
         if (this->adjList[v][j].first == u) {
           // this is ugly!
           this->adjList[v].erase(this->adjList[v].begin() + j);
@@ -341,13 +341,14 @@ public:
               << V << ", m = "
               << E << ", p = "
               << W << std::endl;
+
     if (detailed) {
       // iterate over nodes
-      for (unsigned int u = 1; u <= this->getV(); ++u) {
+      for (int u = 1; u <= this->getV(); ++u) {
         // iterate over adjacency list
         for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
           std::cout << "c(" << u << ", " << this->adjList[u][j].first << ") = (";
-          for (unsigned int w = 0; w < this->getW();++w){
+          for (int w = 0; w < this->getW();++w){
             std::cout << this->adjList[u][j].second[w];
             if (w == (this->getW() - 1)) {
               std::cout << ")";
@@ -412,7 +413,7 @@ public:
     unsigned int V = this->getV();
     std::vector<bool> visited(V + 1);
 
-    for (int node = 1; node <= V; ++node) {
+    for (unsigned int node = 1; node <= V; ++node) {
       // already visited, i.e., in some component?
       if (visited[node])
         continue;
@@ -448,16 +449,17 @@ public:
   static Graph getInducedSubgraph(const Graph &g, std::vector<int> nodes, int direction) {
     // copy constructor
     Graph gind(g);
+    unsigned int V = g.getV();
 
     // which nodes should be kept
-    std::vector<bool> keep(g.getV() + 1);
+    std::vector<bool> keep(V + 1);
     for (auto node: nodes) {
       keep[node] = true;
     }
 
     //FIXME: here crap happens!
     // now go through all edges and drop, if not both endpoints should be kept
-    for (unsigned int u = 1; u <= g.getV(); ++u) {
+    for (unsigned int u = 1; u <= V; ++u) {
       for (unsigned int j = 0; j < g.adjList[u].size(); ++j) {
         unsigned int v = g.adjList[u][j].first;
         if (direction == 0) {
@@ -483,7 +485,7 @@ public:
 
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
     for (int u = 1; u <= this->V; ++u) {
-      for (int j = 0; j < this->adjList[u].size(); ++j) {
+      for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
         int v = this->adjList[u][j].first;
         if (u < v) {
           // FIXME: ugly as sin!
@@ -570,7 +572,7 @@ public:
 
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
     for (int u = 1; u <= this->V; ++u) {
-      for (int j = 0; j < this->adjList[u].size(); ++j) {
+      for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
         int v = this->adjList[u][j].first;
         if (u < v) {
           // FIXME: ugly as sin!
@@ -642,7 +644,7 @@ public:
     expects ids and removes these edges
     */
     std::vector<Edge2> edges = forest.getEdges();
-    for (int i = 0; i < maxDrop; ++i) {
+    for (unsigned int i = 0; i < maxDrop; ++i) {
       int selectedEdgeID = selEdges[i];
       Edge2 edge = edges[selectedEdgeID];
       //std::cout << "Removing " << (i+1) << "-th edge" << std::endl;
@@ -804,7 +806,7 @@ public:
         double largestWeight = -1;
         // sample random weight
         std::vector<double> rndWeight = this->getRandomWeights();
-        for (int i = 1; i < edgesOnCircle.size(); ++i) {
+        for (unsigned int i = 1; i < edgesOnCircle.size(); ++i) {
           std::vector<double> edgeWeight = edgesOnCircle[i].second;
           double scalWeight = 0;
           for (int j = 0; j < this->getW(); ++j) {
@@ -825,8 +827,8 @@ public:
   }
 
   std::vector<Graph> doMCPrim() {
-    int V = this->getV();
-    int W = this->getW();
+    unsigned int V = this->getV();
+    unsigned int W = this->getW();
 
     std::vector<Graph> trees;
 
@@ -996,7 +998,7 @@ public:
 
     // get random start node
     //FIXME: write helper getRandomInteger(max)
-    int rndNode = (int)(((double)rand() / (double)RAND_MAX) * V) + 1;
+    unsigned int rndNode = (int)(((double)rand() / (double)RAND_MAX) * V) + 1;
     // prevent memory not mapped error
     if (rndNode > V) {
       rndNode = V;
@@ -1008,7 +1010,7 @@ public:
     queue.push_back(rndNode);
 
     std::vector<bool> done(V + 1);
-    for (int i = 0; i <= V; ++i) {
+    for (unsigned int i = 0; i <= V; ++i) {
       done[i] = false;
     }
 
@@ -1122,7 +1124,7 @@ public:
     // now we are ready to read edge costs section
     //FIXME: generalize to >= 2 objectives
     std::string var;
-    int u,v;
+    int u,v = 0;
     std::vector<double> w;
 
     while (infile.good()) {
@@ -1366,7 +1368,7 @@ int getSizeOfLargestCommonComponent(Graph* g1, Graph* g2) {
   Graph intersection = Graph::getIntersectionGraph(*g1, *g2);
   std::vector<std::vector<int>> components = intersection.getConnectedComponents();
   int largest = components[0].size();
-  for (int i = 1; i < components.size(); ++i) {
+  for (unsigned int i = 1; i < components.size(); ++i) {
     if (components[i].size() > largest) {
       largest = components[i].size();
     }
@@ -1383,7 +1385,7 @@ bool setEdgeProbabilitiesR(Graph* g, NumericVector probs) {
 NumericVector getEdgeProbabilitiesR(Graph* g) {
   NumericVector out(g->getE());
   std::vector<double> probs = g->getEdgeProbabilities();
-  for (int i = 0; i < probs.size(); ++i) {
+  for (unsigned int i = 0; i < probs.size(); ++i) {
     out[i] = probs[i];
   }
   return out;
@@ -1395,8 +1397,8 @@ NumericMatrix getWeightsAsMatrix(Graph *g) {
   NumericMatrix edgeMatrix(W, E);
 
   std::vector<Edge2> edges = g->getEdges();
-  for (int i = 0; i < E; ++i) {
-    for (int j = 0; j < W; ++j) {
+  for (unsigned int i = 0; i < E; ++i) {
+    for (unsigned int j = 0; j < W; ++j) {
       edgeMatrix(j, i) = edges[i].second[j];
     }
   }
@@ -1408,7 +1410,7 @@ NumericMatrix toEdgeList(Graph *g) {
   NumericMatrix edgeMatrix(2, E);
 
   std::vector<Edge2> edges = g->getEdges();
-  for (int i = 0; i < E; ++i) {
+  for (unsigned int i = 0; i < E; ++i) {
     edgeMatrix(0, i) = edges[i].first.first;
     edgeMatrix(1, i) = edges[i].first.second;
   }
@@ -1426,16 +1428,16 @@ List doMCPrim(Graph *g) {
   //FIXME: this is absolutely ultra-ugly!!!
   NumericMatrix edgeMatrix(2 * ntrees, V - 1);
 
-  for (int i = 0; i < ntrees; ++i) {
+  for (unsigned int i = 0; i < ntrees; ++i) {
     // Fixme
     Graph tree = trees[i];
     std::vector<double> costs = trees[i].getSumOfEdgeWeights();
-    for (int w = 0; w < weights; ++w) {
+    for (unsigned int w = 0; w < weights; ++w) {
       costMatrix(w, i) = costs[w];
     }
 
     std::vector<Edge2> treeEdges = tree.getEdges();
-    for (int j = 0; j < treeEdges.size(); ++j) {
+    for (unsigned int j = 0; j < treeEdges.size(); ++j) {
       Edge2 edge = treeEdges[j];
       // store each two rows for edges
       edgeMatrix(2 * i, j) = edge.first.first;
