@@ -59,7 +59,7 @@ mcMSTEmoaBG = function(instance,
 
   if (inherits(instance, "grapherator"))
     instance = grapheratorToGraph(instance)
-
+    print("graph builded")
   # get number of nodes
   n = instance$getV()
   n.objectives = instance$getW()
