@@ -350,7 +350,7 @@ public:
         // iterate over adjacency list
         for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
           std::cout << "c(" << u << ", " << this->adjList[u][j].first << ") = (";
-          for (int w = 0; w < this->getW();++w){
+          for (int w = 0; w < this->getW(); ++w){
             std::cout << this->adjList[u][j].second[w];
             if (w == (this->getW() - 1)) {
               std::cout << ")";
@@ -490,15 +490,23 @@ public:
 
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
     for (int u = 1; u <= this->V; ++u) {
+      Rcout << "u = " << u << " <= " << this->V << " = V: " << u <= this->V << std::endl;
       for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
+          Rcout << "j = " << j << " < " << this->adjList[u].size() << " = adjList[u].size(): " << u j < this->adjList[u].size() << std::endl;
         int v = this->adjList[u][j].first;
+        Rcout << "v = " << v << std::endl;
+        Rcout << "2.: u = " << u << " < " << v << " = v: " << u < v << std::endl;
         if (u < v) {
+          Rcout << "3.: u = " << u << " < " << v << " = v: " << u < v << std::endl;
           // FIXME: ugly as sin!
           std::vector<double> w;
-          for (int i = 0; i < this->getW();++i) {
+          for (int i = 0; i < this->getW(); ++i) {
+            Rcout << "i = " << i << " < " << this->getW() << " = V: " << u <= this->getW() << std::endl;
             w[i] = this->adjList[u][j].second[i];
+            Rcout << "w[" << i << "] = " << w[i] << "; u = " << u << "; j = " << j << std::endl;
           }
           double costs = (double)rand() / (double)RAND_MAX;
+          Rcout << "costs = " << costs << std::endl;
           edgelist.push_back({costs, {{u, v}, w}});
         }
       }
@@ -605,7 +613,7 @@ public:
       int u = it->second.first.first;
       int v = it->second.first.second;
       std::vector<double> w;
-      for (int i = 0; i < this->getW();++i) {
+      for (int i = 0; i < this->getW(); ++i) {
         w[i] = it->second.second[i];
       }
 
