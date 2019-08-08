@@ -1115,7 +1115,7 @@ public:
     }
 
     // now we are ready to read edge costs section
-    //FIXME: generalize to >= 2 objectives
+    //FIXME: Bennene wvar um!!
     std::string var;
     int u,v = 0;
     std::vector<double> w;
@@ -1124,7 +1124,7 @@ public:
       std::getline(infile, line);
       std::stringstream ssline(line);
       int i = 0;
-      double var;
+      double wvar;
       while (ssline.good()) {
         std::getline(ssline, var,',');
         std::stringstream ssvar(var);
@@ -1133,8 +1133,8 @@ public:
         } else if (i == 1){
           ssvar >> v;
         } else {
-          ssvar >> var;
-          w.push_back(var);
+          ssvar >> wvar;
+          w.push_back(wvar);
         }
       }
       g.addEdge(u, v, w);
