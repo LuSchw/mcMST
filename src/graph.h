@@ -499,12 +499,8 @@ public:
         if (u < v) {
           Rcout << "3.: u = " << u << " < " << v << " = v: " << (u < v) << std::endl;
           // FIXME: ugly as sin!
-          std::vector<double> w;
-          for (int i = 0; i < this->getW(); ++i) {
-            Rcout << "i = " << i << " < " << this->getW() << " = V: " << (u <= this->getW()) << std::endl;
-            w[i] = this->adjList[u][j].second[i];
-            Rcout << "w[" << i << "] = " << w[i] << "; u = " << u << "; j = " << j << std::endl;
-          }
+          std::vector<double> w = this->adjList[u][j].second;
+          //Rcout << "w = <" << w << std::endl;
           double costs = (double)rand() / (double)RAND_MAX;
           Rcout << "costs = " << costs << std::endl;
           edgelist.push_back({costs, {{u, v}, w}});
