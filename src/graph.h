@@ -586,10 +586,9 @@ public:
         int v = this->adjList[u][j].first;
         if (u < v) {
           // FIXME: ugly as sin!
-          std::vector<double> w;
+          std::vector<double> w = this->adjList[u][j].second;
           double costs = 0;
           for (int i = 0; i < this->getW(); ++i) {
-            w[i] = this->adjList[u][j].second[i];
             costs += w[i] * weight[i];
           }
           edgelist.push_back({costs, {{u, v}, w}});
@@ -606,10 +605,7 @@ public:
       // get end nodes
       int u = it->second.first.first;
       int v = it->second.first.second;
-      std::vector<double> w;
-      for (int i = 0; i < this->getW(); ++i) {
-        w[i] = it->second.second[i];
-      }
+      std::vector<double> w = it->second.second;
 
       if (!UF.find(u, v)) {
         // link components
@@ -661,19 +657,8 @@ public:
       forest.removeEdge(edge.first.first, edge.first.second);
     }
 
-    // ERSTMAL NUR AUF METHODE 2 BESCHRÄNKT; ANWENDUNG WELCHER METHODE IM SPÄTEREN VERLAUF ENTSCHEIDEN/ BEIDE VARIANTEN IMPLEMENTIEREN
-    // now sample n random weights in [0, 1]
-    std::vector<double> rndWeight;
-    double s = 0;
-    for (int i = 0; i < this->getW(); ++i) {
-      rndWeight[i] = (double)rand() / (double)RAND_MAX;
-      s += rndWeight[i];
-    }
-
-    // divide all weights by their sum, so their sum is 1
-    for (int i = 0; i < this->getW(); ++i) {
-      rndWeight[i] /= s;
-    }
+    // now sample n random weights with their sum = 1
+    std::vector<double> rndWeight = this->getRandomWeights();
 
     // build new spanning tree by reconnecting forest
     Graph mst2 = this->getMSTKruskal(rndWeight, forest);
@@ -793,10 +778,8 @@ public:
       Edge2 edgeToAdd = this->edgeVector[edgeToAddId];
       int u = edgeToAdd.first.first;
       int v = edgeToAdd.first.second;
-      std::vector<double> w;
-      for (int i = 0; i < this->getW(); ++i) {
-        w[i] = edgeToAdd.second[i];
-      }
+      std::vector<double> w = edgeToAdd.second;
+
       // do nothing if edge already in tree
       if (mst2.hasEdge(u, v)) {
         // std::cout << "Selected edge already in tree." << std::endl;
@@ -1141,6 +1124,7 @@ public:
       std::getline(infile, line);
       std::stringstream ssline(line);
       int i = 0;
+      double var;
       while (ssline.good()) {
         std::getline(ssline, var,',');
         std::stringstream ssvar(var);
@@ -1149,7 +1133,8 @@ public:
         } else if (i == 1){
           ssvar >> v;
         } else {
-          ssvar >> w[i-2];
+          ssvar >> var;
+          w.push_back(var);
         }
       }
       g.addEdge(u, v, w);
