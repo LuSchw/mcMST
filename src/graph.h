@@ -480,8 +480,11 @@ public:
   }
 
   Graph getRandomMSTKruskal() {
+    Rcout << "In Graph Class" << std::endl;
     Graph initialTree(this->getV(), this->getW(), false);
+    Rcout << "Initial tree" << std::endl;
     UnionFind UF(this->V);
+    Rcout << "UF" << std::endl;
 
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
     for (int u = 1; u <= this->V; ++u) {
@@ -498,10 +501,11 @@ public:
         }
       }
     }
-
+    Rcout << "For-loops done " << std::endl;
     // sort edges in increasing order
     sort(edgelist.begin(), edgelist.end());
 
+    Rcout << "Edges sorted" << std::endl;
     // Edge iterator
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>>::iterator it;
     for (it = edgelist.begin(); it != edgelist.end(); it++) {
@@ -526,6 +530,8 @@ public:
         break;
       }
     }
+
+    Rcout << "2nd For-Loop Done" << std::endl;
     return initialTree;
   }
 
@@ -1303,7 +1309,9 @@ Graph getMST(Graph * mst) {
 }
 
 Graph getRandomMST(Graph* mst) {
+  Rcout << "In Represntation Converter" << std::endl;
   Graph g2 = mst->getRandomMSTKruskal();
+  Rcout << "Out Represntation Converter" << std::endl;
   return g2;
 }
 
