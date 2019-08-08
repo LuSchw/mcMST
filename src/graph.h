@@ -119,7 +119,7 @@ public:
   }
 
   bool hasEdge(int u, int v) const {
-    for (int i = 0; i < this->adjList[u].size(); ++i) {
+    for (unsigned int i = 0; i < this->adjList[u].size(); ++i) {
       if (this->adjList[u][i].first == v)
         return true;
     }
@@ -196,7 +196,7 @@ public:
     assert(g1.getV() == g2.getV());
     assert(g1.getW() == g2.getW());
 
-    int V = g1.getV();
+    unsigned int V = g1.getV();
 
     // std::cout << "Intersection of graphs with " << V << " nodes" << std::endl;
     // bare skeleton
@@ -214,6 +214,7 @@ public:
         // std::cout << "j = " << j << std::endl;
 
         unsigned int v = g1.adjList[u][j].first;
+        abc
         if (g2.hasEdge(u, v)) {
           std::vector <double> weight = g1.adjList[u][j].second;
           g.addEdge(u, v, weight);
