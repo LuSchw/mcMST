@@ -214,7 +214,6 @@ public:
         // std::cout << "j = " << j << std::endl;
 
         unsigned int v = g1.adjList[u][j].first;
-        abc
         if (g2.hasEdge(u, v)) {
           std::vector <double> weight = g1.adjList[u][j].second;
           g.addEdge(u, v, weight);
@@ -1234,7 +1233,7 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
   std::sort(points2.begin(), points2.end(),
     [](const std::pair<int, std::vector<double>>& x, const std::pair<int, std::vector<double>>& y) {
       if (x.second[0] == y.second[0]) {
-        return x.second[1] < y.second[1]
+        return x.second[1] < y.second[1];
       } else {
         return x.second[0] < y.second[0];
       }
