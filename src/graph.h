@@ -26,6 +26,8 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points);
 class Graph {
 public:
   Graph(int V, int W, bool directed = false) {
+
+    Rcout << "In Graph Build" << std::endl;
     this->V = V;
     this->E = 0;
     this->W = W;
