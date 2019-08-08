@@ -54,6 +54,7 @@ mcMSTEmoaBG = function(instance,
   selMating = NULL, selSurvival = ecr::selNondom,
   ref.point = NULL,
   max.iter = 100L,
+  scalarize = FALSE,
   ...) {
 
   if (inherits(instance, "grapherator"))
@@ -67,7 +68,7 @@ mcMSTEmoaBG = function(instance,
   force(instance)
 
   # default is our subgraph mutator
-  mut = ecr::setup(mut, instance = instance)
+  mut = ecr::setup(mut, instance = instance, scalarize = scalarize)
 
   if (is.null(ref.point))
     ref.point = instance$getMaxWeight() * n

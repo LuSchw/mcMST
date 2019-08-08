@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include <vector>
 #include <tuple>
@@ -16,8 +17,8 @@ using namespace Rcpp;
 #ifndef GRAPH
 #define GRAPH
 
-typedef std::pair< int, std::pair <double, double> > Edge;
-typedef std::pair< std::pair<int, int>, std::pair<double, double> > Edge2;
+typedef std::pair< int, std::vector <double> > Edge;
+typedef std::pair< std::pair<int, int>, std::vector<double> > Edge2;
 typedef std::vector< std::vector <Edge> > AdjacencyList;
 
 std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points);
@@ -66,22 +67,52 @@ public:
     return(distribution(this->rngGenerator));
   }
 
+  std::vector<double> getRandomWeights() {
+    int W = this->getW();
+    std::vector<double> rndWeight(W);
+    double max = 1;
+    for (int i = 0; i < W - 1; ++i) {
+      rndWeight[i] = (double)rand() / (double)RAND_MAX * max;
+      max -= rndWeight[i];
+    }
+    rndWeight[W-1] = max;
+    std::random_shuffle(rndWeight.begin(), rndWeight.end());
+    return rndWeight;
+  }
+
+  std::vector<double> getRandomWeightsAlternative(){
+    int W = this->getW();
+    // now sample n random weights in [0, 1]
+    std::vector<double> rndWeight(W);
+    double s = 0;
+    for (int i = 0; i < W; ++i) {
+      rndWeight[i] = (double)rand() / (double)RAND_MAX;
+      s += rndWeight[i];
+    }
+
+    // divide all weights by their sum, so their sum is 1
+    for (int i = 0; i < this->getW(); ++i) {
+      rndWeight[i] /= s;
+    }
+    return rndWeight;
+  }
+
   unsigned int getRandomEdgeId() {
     return(this->edgeDistribution(this->rngGenerator));
   }
 
-  void addEdge(int u, int v, double w1, double w2) {
+  void addEdge(int u, int v, std::vector<double> w) {
     //FIXME: generalize to multiple edge weights
     //FIXME: use templates to allow integer or double weights
     assert(u >= 1 && u <= this->V);
     assert(v >= 1 && u <= this->V);
 
     if (!this->hasEdge(u, v)) {
-      this->adjList[u].push_back({v, {w1, w2}});
+      this->adjList[u].push_back({v, w});
       this->degrees[u] += 1;
       this->degrees[v] += 1;
       if (!this->directed) {
-        this->adjList[v].push_back({u, {w1, w2}});
+        this->adjList[v].push_back({u, w});
       }
       this->E += 1;
     }
@@ -140,17 +171,21 @@ public:
   }
 
   std::vector<double> getSumOfEdgeWeights() const {
-    std::vector<double> sum(2);
-    sum[0] = 0;
-    sum[1] = 0;
+    std::vector<double> sum(this->getW());
+    for (int i = 0; i < this->getW(); ++i) {
+      sum[i] = 0;
+    }
     for (std::vector<Edge> alist: this->adjList) {
       for (Edge edge: alist) {
-        sum[0] += edge.second.first;
-        sum[1] += edge.second.second;
+        for (int i = 0; i < this->getW(); ++i) {
+          sum[i] += edge.second[i];
+        }
       }
     }
     if (!this->isDirected()) {
-      sum[0] /= 2; sum[1] /= 2;
+      for (int i = 0; i < this->getW(); ++i){
+        sum[i] /= 2;
+      }
     }
     return sum;
   }
@@ -180,8 +215,8 @@ public:
 
         unsigned int v = g1.adjList[u][j].first;
         if (g2.hasEdge(u, v)) {
-          std::pair <double, double> weight = g1.adjList[u][j].second;
-          g.addEdge(u, v, weight.first, weight.second);
+          std::vector <double> weight = g1.adjList[u][j].second;
+          g.addEdge(u, v, weight);
         }
       }
     }
@@ -211,8 +246,8 @@ public:
         // std::cout << "j = " << j << std::endl;
         unsigned int v = g2.adjList[u][j].first;
         if (!g.hasEdge(u, v)) {
-          std::pair <double, double> weight = g1.adjList[u][j].second;
-          g.addEdge(u, v, weight.first, weight.second);
+          std::vector <double> weight = g1.adjList[u][j].second;
+          g.addEdge(u, v, weight);
         }
       }
     }
@@ -311,7 +346,15 @@ public:
       for (unsigned int u = 1; u <= this->getV(); ++u) {
         // iterate over adjacency list
         for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
-          std::cout << "c(" << u << ", " << this->adjList[u][j].first << ") = (" << this->adjList[u][j].second.first << ", " << this->adjList[u][j].second.second << ")";
+          std::cout << "c(" << u << ", " << this->adjList[u][j].first << ") = (";
+          for (unsigned int w = 0; w < this->getW();++w){
+            std::cout << this->adjList[u][j].second[w];
+            if (w == (this->getW() - 1)) {
+              std::cout << ")";
+            } else {
+              std::cout << ", ";
+            }
+          }
           if (j == (this->adjList[u].size() - 1)) {
             std::cout << std::endl;
           } else {
@@ -438,16 +481,18 @@ public:
     Graph initialTree(this->getV(), this->getW(), false);
     UnionFind UF(this->V);
 
-    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::pair<double, double>>>> edgelist;
+    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
     for (int u = 1; u <= this->V; ++u) {
       for (int j = 0; j < this->adjList[u].size(); ++j) {
         int v = this->adjList[u][j].first;
         if (u < v) {
-          // FIXME: ugly as sin! and restricted to two weights!
-          double w1 = this->adjList[u][j].second.first;
-          double w2 = this->adjList[u][j].second.second;
+          // FIXME: ugly as sin!
+          std::vector<double> w;
+          for (int i = 0; i < this->getW();++i) {
+            w[i] = this->adjList[u][j].second[i];
+          }
           double costs = (double)rand() / (double)RAND_MAX;
-          edgelist.push_back({costs, {{u, v}, {w1, w2}}});
+          edgelist.push_back({costs, {{u, v}, w}});
         }
       }
     }
@@ -456,17 +501,19 @@ public:
     sort(edgelist.begin(), edgelist.end());
 
     // Edge iterator
-    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::pair<double, double>>>>::iterator it;
+    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>>::iterator it;
     for (it = edgelist.begin(); it != edgelist.end(); it++) {
       // get end nodes
       int u = it->second.first.first;
       int v = it->second.first.second;
-      double w1 = it->second.second.first;
-      double w2 = it->second.second.second;
+      std::vector<double> w;
+      for (int i = 0; i < this->getW(); ++i) {
+        w[i] = it->second.second[i];
+      }
 
       if (!UF.find(u, v)) {
         // link components
-        initialTree.addEdge(u, v, w1, w2);
+        initialTree.addEdge(u, v, w);
         // merge components
         UF.unite(u, v);
       }
@@ -480,8 +527,12 @@ public:
     return initialTree;
   }
 
-  Graph getMSTKruskal(double weight) {
-    assert(weight >= 0 && weight <= 1);
+  Graph getMSTKruskal(std::vector<double> weight) {
+    double sum = 0;
+    for (int i = 0; i < this->getW(); ++i) {
+      sum = sum + weight[i];
+    }
+    assert(sum == 1);
 
     // represent minimum spanning tree with graph object
     Graph initialTree(this->getV(), this->getW(), false);
@@ -490,8 +541,12 @@ public:
     return this->getMSTKruskal(weight, initialTree, UF);
   }
 
-  Graph getMSTKruskal(double weight, Graph &initialTree) {
-    assert(weight >= 0 && weight <= 1);
+  Graph getMSTKruskal(std::vector<double> weight, Graph &initialTree) {
+    double sum = 0;
+    for (int i = 0; i < this->getW(); ++i) {
+      sum = sum + weight[i];
+    }
+    assert(sum == 1);
 
     std::vector<std::vector<int>> components = initialTree.getConnectedComponents();
     //std::cout << "Building MST from " << components.size() << " components" << std::endl;
@@ -501,7 +556,7 @@ public:
     return this->getMSTKruskal(weight, initialTree, UF);
   }
 
-  Graph getMSTKruskal(double weight, Graph &initialTree, UnionFind &UF) {
+  Graph getMSTKruskal(std::vector<double> weight, Graph &initialTree, UnionFind &UF) {
     // assert(weight >= 0 && weight <= 1);
 
     // // represent minimum spanning tree with graph object
@@ -513,16 +568,19 @@ public:
     // now we need to transform graph to list of edges which can be
     // sorted by weights
 
-    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::pair<double, double>>>> edgelist;
+    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
     for (int u = 1; u <= this->V; ++u) {
       for (int j = 0; j < this->adjList[u].size(); ++j) {
         int v = this->adjList[u][j].first;
         if (u < v) {
-          // FIXME: ugly as sin! and restricted to two weights!
-          double w1 = this->adjList[u][j].second.first;
-          double w2 = this->adjList[u][j].second.second;
-          double costs = weight * w1 + (1 - weight) * w2;
-          edgelist.push_back({costs, {{u, v}, {w1, w2}}});
+          // FIXME: ugly as sin!
+          std::vector<double> w;
+          double costs = 0;
+          for (int i = 0; i < this->getW(); ++i) {
+            w[i] = this->adjList[u][j].second[i];
+            costs += w[i] * weight[i];
+          }
+          edgelist.push_back({costs, {{u, v}, w}});
         }
       }
     }
@@ -531,17 +589,19 @@ public:
     sort(edgelist.begin(), edgelist.end());
 
     // Edge iterator
-    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::pair<double, double>>>>::iterator it;
+    std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>>::iterator it;
     for (it = edgelist.begin(); it != edgelist.end(); it++) {
       // get end nodes
       int u = it->second.first.first;
       int v = it->second.first.second;
-      double w1 = it->second.second.first;
-      double w2 = it->second.second.second;
+      std::vector<double> w;
+      for (int i = 0; i < this->getW();++i) {
+        w[i] = it->second.second[i];
+      }
 
       if (!UF.find(u, v)) {
         // link components
-        initialTree.addEdge(u, v, w1, w2);
+        initialTree.addEdge(u, v, w);
         // merge components
         UF.unite(u, v);
       }
@@ -589,8 +649,19 @@ public:
       forest.removeEdge(edge.first.first, edge.first.second);
     }
 
-    // now sample a random weight in [0, 1]
-    double rndWeight = (double)rand() / (double)RAND_MAX;
+    // ERSTMAL NUR AUF METHODE 2 BESCHRÄNKT; ANWENDUNG WELCHER METHODE IM SPÄTEREN VERLAUF ENTSCHEIDEN/ BEIDE VARIANTEN IMPLEMENTIEREN
+    // now sample n random weights in [0, 1]
+    std::vector<double> rndWeight;
+    double s = 0;
+    for (int i = 0; i < this->getW(); ++i) {
+      rndWeight[i] = (double)rand() / (double)RAND_MAX;
+      s += rndWeight[i];
+    }
+
+    // divide all weights by their sum, so their sum is 1
+    for (int i = 0; i < this->getW(); ++i) {
+      rndWeight[i] /= s;
+    }
 
     // build new spanning tree by reconnecting forest
     Graph mst2 = this->getMSTKruskal(rndWeight, forest);
@@ -612,8 +683,7 @@ public:
     std::vector<int> pi(V + 1);
 
     // costs of DFS tree edges
-    std::vector<std::pair<double, double>> wi(V + 1);
-
+    std::vector<std::vector<double>> wi(V + 1);
     // create stack for iterative DFS
     std::stack<int> stack;
 
@@ -679,9 +749,10 @@ public:
     int m = edges.size();
     std::vector<std::vector<double>> costs;
     for (Edge2 edge: edges) {
-      std::vector<double> edgeCosts(2);
-      edgeCosts[0] = edge.second.first;
-      edgeCosts[1] = edge.second.second;
+      std::vector<double> edgeCosts;
+      for (int i = 0; i < this->getW(); ++i) {
+        edgeCosts[i] = edge.second[i];
+      }
       costs.push_back(edgeCosts);
     }
 
@@ -710,15 +781,17 @@ public:
       Edge2 edgeToAdd = this->edgeVector[edgeToAddId];
       int u = edgeToAdd.first.first;
       int v = edgeToAdd.first.second;
-      double w1 = edgeToAdd.second.first;
-      double w2 = edgeToAdd.second.second;
+      std::vector<double> w;
+      for (int i = 0; i < this->getW(); ++i) {
+        w[i] = edgeToAdd.second[i];
+      }
       // do nothing if edge already in tree
       if (mst2.hasEdge(u, v)) {
         // std::cout << "Selected edge already in tree." << std::endl;
         continue;
       }
       // otherwise add edge ...
-      mst2.addEdge(u, v, w1, w2);
+      mst2.addEdge(u, v, w);
       // and get rid of random edge on introduced circle
       std::vector<Edge2> edgesOnCircle = mst2.getCircleEdges(u);
       // std::cout << "Added edge: (" << u << ", " << v << "). There is a circle of length " << edgesOnCircle.size() << " edges now!" << std::endl;
@@ -730,10 +803,13 @@ public:
         int largestIdx = 0;
         double largestWeight = -1;
         // sample random weight
-        double rndWeight = (double)rand() / (double)RAND_MAX;
+        std::vector<double> rndWeight = this->getRandomWeights();
         for (int i = 1; i < edgesOnCircle.size(); ++i) {
-          std::pair<double, double> edgeWeight = edgesOnCircle[i].second;
-          double scalWeight = rndWeight * edgeWeight.first + (1 - rndWeight) * edgeWeight.second;
+          std::vector<double> edgeWeight = edgesOnCircle[i].second;
+          double scalWeight = 0;
+          for (int j = 0; j < this->getW(); ++j) {
+            scalWeight += rndWeight[i] * edgeWeight[i];
+          }
           if (scalWeight > largestWeight) {
             largestWeight = scalWeight;
             largestIdx = i;
@@ -742,7 +818,7 @@ public:
         std::pair<int, int> edgeToDelete = edgesOnCircle[largestIdx].first;
         mst2.removeEdge(edgeToDelete.first, edgeToDelete.second);
       }
-      assert(isSpanningTree(mst2));
+      assert(mst2.isSpanningTree());
     }
 
     return(mst2);
@@ -759,7 +835,7 @@ public:
     // now build initial partial trees, each one for each non-dominated edge
     for (Edge2 edge: nonDomEdges) {
       Graph tree(V, W, false);
-      tree.addEdge(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+      tree.addEdge(edge.first.first, edge.first.second, edge.second);
       trees.push_back(tree);
     }
 
@@ -784,10 +860,10 @@ public:
         // }
 
         for (Edge2 edge: this->edgeVector) {
-          int v = edge.first.first;
-          int w = edge.first.second;
-          if ((partialTree.getDegree(v) == 0 && partialTree.getDegree(w) > 0) ||
-            (partialTree.getDegree(v) > 0 && partialTree.getDegree(w) == 0)) {
+          int u = edge.first.first;
+          int v = edge.first.second;
+          if ((partialTree.getDegree(u) == 0 && partialTree.getDegree(v) > 0) ||
+            (partialTree.getDegree(u) > 0 && partialTree.getDegree(v) == 0)) {
             candidateEdges.push_back(edge);
           }
         }
@@ -800,7 +876,7 @@ public:
           // make copy of partial tree
           Graph partialTreeCopy(partialTree);
           // add nondominated edge
-          partialTreeCopy.addEdge(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+          partialTreeCopy.addEdge(edge.first.first, edge.first.second, edge.second);
           // save partial tree
           trees2.push_back(partialTreeCopy);
         }
@@ -973,9 +1049,24 @@ public:
     } // while
 
     // now we need to rewire the edges
-    double rndWeight = (double)rand() / (double)RAND_MAX;
+    std::vector<double> rndWeight = this->getRandomWeights();
+    int W = this->getW();
     if (!scalarize) {
-      rndWeight = round(rndWeight);
+      int max = 0;
+      int maxI = -1;
+      for (int i = 0; i < W; ++i) {
+        if (rndWeight[i] > max){
+          max = rndWeight[i];
+          maxI = i;
+        }
+      }
+      for (int i = 0; i < W; ++i){
+        if (maxI == i){
+          rndWeight[i] = 1;
+        } else {
+          rndWeight[i] = 0;
+        }
+      }
     }
 
     // build new spanning tree by reconnecting forest
@@ -1030,12 +1121,26 @@ public:
 
     // now we are ready to read edge costs section
     //FIXME: generalize to >= 2 objectives
-    int u, v;
-    double c1, c2;
+    std::string var;
+    int u,v;
+    std::vector<double> w;
 
     while (infile.good()) {
-      infile >> u >> sep >> v >> sep >> c1 >> sep >> c2;
-      g.addEdge(u, v, c1, c2);
+      std::getline(infile, line);
+      std::stringstream ssline(line);
+      int i = 0;
+      while (ssline.good()) {
+        std::getline(ssline, var,',');
+        std::stringstream ssvar(var);
+        if (i == 0){
+          ssvar >> u;
+        } else if (i == 1){
+          ssvar >> v;
+        } else {
+          ssvar >> w[i-2];
+        }
+      }
+      g.addEdge(u, v, w);
     }
 
     infile.close();
@@ -1070,8 +1175,8 @@ public:
       for (v = 1; v <= V; ++v) {
         if (degrees[v] == 0) {
           // add edge
-          std::pair<double, double> weight = g->getEdge(u, v).second;
-          tree.addEdge(u, v, weight.first, weight.second);
+          std::vector<double> weight = g->getEdge(u, v).second;
+          tree.addEdge(u, v, weight);
 
           // reduce degrees
           degrees[u] -= 1;
@@ -1094,8 +1199,8 @@ public:
         }
       }
     }
-    std::pair<double, double> weight = g->getEdge(u, v).second;
-    tree.addEdge(u, v, weight.first, weight.second);
+    std::vector<double> weight = g->getEdge(u, v).second;
+    tree.addEdge(u, v, weight);
 
     return tree;
   }
@@ -1106,8 +1211,8 @@ public:
     for (int i = 0; i < edgeList.ncol(); ++i) {
       int u = edgeList(0, i);
       int v = edgeList(1, i);
-      std::pair<double, double> weight = g->getEdge(u, v).second;
-      g2.addEdge(u, v, weight.first, weight.second);
+      std::vector<double> weight = g->getEdge(u, v).second;
+      g2.addEdge(u, v, weight);
     }
 
     return g2;
@@ -1127,13 +1232,11 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
   // now sort regarding first dimension in ascending order
   std::sort(points2.begin(), points2.end(),
     [](const std::pair<int, std::vector<double>>& x, const std::pair<int, std::vector<double>>& y) {
-      // if (x.second[0] == y.second[0]) {
-      //   if (x.second[1] < x.second[1]) {
-      //     return true;
-      //   }
-      //   return false;
-      // }
-      return x.second[0] < y.second[0];
+      if (x.second[0] == y.second[0]) {
+        return x.second[1] < y.second[1]
+      } else {
+        return x.second[0] < y.second[0];
+      }
     });
 
   // finally go through points in accending order. Each time we find a point
@@ -1190,8 +1293,9 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
 }
 
 
+
 Graph getMST(Graph * mst) {
-  double rndWeight = (double)rand() / (double)RAND_MAX;
+  std::vector<double> rndWeight = mst->getRandomWeights();
   Graph g2 = mst->getMSTKruskal(rndWeight);
   return g2;
 }
@@ -1201,7 +1305,7 @@ Graph getRandomMST(Graph* mst) {
   return g2;
 }
 
-Graph getMSTByWeightedSumScalarization(Graph* g, double weight) {
+Graph getMSTByWeightedSumScalarization(Graph* g, std::vector<double> weight) {
   Graph mst = g->getMSTKruskal(weight);
   return mst;
 }
@@ -1238,14 +1342,8 @@ NumericVector getMaxWeight(Graph* g) {
   // for each weight
   for (Edge2 edge: edges) {
     for (int i = 0; i < g->getW(); ++i) {
-      if (i == 0) {
-        if (edge.second.first > m[i]) {
-          m[i] = edge.second.first;
-        }
-      } else {
-        if (edge.second.second > m[i]) {
-          m[i] = edge.second.second;
-        }
+      if (edge.second[i] > m[i]) {
+        m[i] = edge.second[i];
       }
     }
   }
@@ -1293,12 +1391,14 @@ NumericVector getEdgeProbabilitiesR(Graph* g) {
 
 NumericMatrix getWeightsAsMatrix(Graph *g) {
   unsigned int E = g->getE();
-  NumericMatrix edgeMatrix(2, E);
+  unsigned int W = g->getW();
+  NumericMatrix edgeMatrix(W, E);
 
   std::vector<Edge2> edges = g->getEdges();
   for (int i = 0; i < E; ++i) {
-    edgeMatrix(0, i) = edges[i].second.first;
-    edgeMatrix(1, i) = edges[i].second.second;
+    for (int j = 0; j < W; ++j) {
+      edgeMatrix(j, i) = edges[i].second[j];
+    }
   }
   return edgeMatrix;
 }
@@ -1320,8 +1420,7 @@ List doMCPrim(Graph *g) {
 
   std::vector<Graph> trees = g->doMCPrim();
   unsigned int ntrees = trees.size();
-  //FIXME: generalize
-  unsigned int weights = 2;
+  unsigned int weights = g->getW();
 
   NumericMatrix costMatrix(weights, ntrees);
   //FIXME: this is absolutely ultra-ugly!!!
@@ -1331,8 +1430,9 @@ List doMCPrim(Graph *g) {
     // Fixme
     Graph tree = trees[i];
     std::vector<double> costs = trees[i].getSumOfEdgeWeights();
-    costMatrix(0, i) = costs[0];
-    costMatrix(1, i) = costs[1];
+    for (int w = 0; w < weights; ++w) {
+      costMatrix(w, i) = costs[w];
+    }
 
     std::vector<Edge2> treeEdges = tree.getEdges();
     for (int j = 0; j < treeEdges.size(); ++j) {
