@@ -519,7 +519,7 @@ public:
       int u = it->second.first.first;
       int v = it->second.first.second;
       std::vector<double> w = it->second.second;
-      Rcout << w << std::endl;
+      Rcout << w[0] << " ; " << w[1] << std::endl;
 
       if (!UF.find(u, v)) {
         // link components
