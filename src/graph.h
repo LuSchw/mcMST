@@ -518,12 +518,8 @@ public:
       // get end nodes
       int u = it->second.first.first;
       int v = it->second.first.second;
-      std::vector<double> w;
-      Rcout << "before for loop" << std::endl;
-      for (int i = 0; i < this->getW(); ++i) {
-        w[i] = it->second.second[i];
-      }
-      Rcout << "after forloop" << std::endl;
+      std::vector<double> w = it->second.second;
+      Rcout << "after zuweisung" << std::endl;
 
       if (!UF.find(u, v)) {
         // link components
