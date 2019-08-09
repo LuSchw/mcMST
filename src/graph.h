@@ -174,7 +174,7 @@ public:
   }
 
   std::vector<double> getSumOfEdgeWeights() const {
-    //Rcout << "getSumOfEdgeWeights() is entered " << std::endl;
+    Rcout << "getSumOfEdgeWeights() is entered " << std::endl;
     std::vector<double> sum(this->getW());
     for (int i = 0; i < this->getW(); ++i) {
       sum[i] = 0;
