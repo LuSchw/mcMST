@@ -27,7 +27,7 @@ class Graph {
 public:
   Graph(int V, int W, bool directed = false) {
 
-    Rcout << "In Graph Build" << std::endl;
+    //Rcout << "In Graph Build" << std::endl;
     this->V = V;
     this->E = 0;
     this->W = W;
@@ -173,7 +173,7 @@ public:
   }
 
   std::vector<double> getSumOfEdgeWeights() const {
-    Rcout << "getSumOfEdgeWeights() is entered " << std::endl;
+    //Rcout << "getSumOfEdgeWeights() is entered " << std::endl;
     std::vector<double> sum(this->getW());
     for (int i = 0; i < this->getW(); ++i) {
       sum[i] = 0;
@@ -411,7 +411,7 @@ public:
   }
 
   std::vector<std::vector<int>> getConnectedComponents() const {
-    Rcout << "getConnectedComponents() is entered" << std::endl;
+    //Rcout << "getConnectedComponents() is entered" << std::endl;
     std::vector<std::vector<int>> components;
 
     unsigned int V = this->getV();
@@ -556,7 +556,7 @@ public:
   }
 
   Graph getMSTKruskal(std::vector<double> weight, Graph &initialTree) {
-    Rcout << "getMSTKruskal(2) is entered" << std::endl;
+    //Rcout << "getMSTKruskal(2) is entered" << std::endl;
     double sum = 0;
     for (int i = 0; i < this->getW(); ++i) {
       sum = sum + weight[i];
@@ -573,7 +573,7 @@ public:
 
   Graph getMSTKruskal(std::vector<double> weight, Graph &initialTree, UnionFind &UF) {
 
-      Rcout << "getMSTKruskal(3) is entered" << std::endl;
+      //Rcout << "getMSTKruskal(3) is entered" << std::endl;
     // assert(weight >= 0 && weight <= 1);
 
     // // represent minimum spanning tree with graph object
@@ -987,7 +987,7 @@ public:
   // }
 
   Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
-    Rcout << "getMSTBySubgraphMutation is entered " << std::endl;
+    //Rcout << "getMSTBySubgraphMutation is entered " << std::endl;
     assert(maxSelect <= this->getV());
 
     unsigned int V = this->getV();
@@ -1304,9 +1304,9 @@ Graph getMST(Graph * mst) {
 }
 
 Graph getRandomMST(Graph* mst) {
-  Rcout << "In Represntation Converter" << std::endl;
+  //Rcout << "In Represntation Converter" << std::endl;
   Graph g2 = mst->getRandomMSTKruskal();
-  Rcout << "Out Represntation Converter" << std::endl;
+  //Rcout << "Out Represntation Converter" << std::endl;
   return g2;
 }
 
