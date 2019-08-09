@@ -524,6 +524,8 @@ public:
       Rcout << w[0] << " ; " << w[1] << std::endl;
 
       if (!UF.find(u, v)) {
+
+        Rcout << w[0] << " ; " << w[1] << " Added!" << std::endl;
         // link components
         initialTree.addEdge(u, v, w);
         // merge components
