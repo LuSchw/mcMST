@@ -1060,21 +1060,27 @@ public:
 
     // now we need to rewire the edges
     std::vector<double> rndWeight = this->getRandomWeights();
-    int W = this->getW();
+    unsigned int W = this->getW();
     if (!scalarize) {
       int max = 0;
       int maxI = -1;
-      for (int i = 0; i < W; ++i) {
+      for (unsigned int i = 0; i < W; ++i) {
+        Rcout << "1.For; Before IF; i=" << i << " ; rndWeight[" << i << "]=" << rndWeight[i] << " >? max=" << max << " ; maxI=" << maxI << std::endl;
         if (rndWeight[i] > max){
           max = rndWeight[i];
           maxI = i;
+          Rcout << "1.For; In IF; i=" << i << " ; rndWeight[" << i << "]=" << rndWeight[i] << " == max=" << max << " ; maxI=" << maxI << std::endl;
         }
       }
-      for (int i = 0; i < W; ++i){
+      Rcout << "1.For; After; max=" << max << " ; maxI=" << maxI << std::endl;
+      for (unsigned int i = 0; i < W; ++i){
+        Rcout << "2.For; Before Ifelse; i=" << i << " ; rndWeight[" << i << "]=" << rndWeight[i] << " ; maxI=" << maxI << std::endl;
         if (maxI == i){
           rndWeight[i] = 1;
+          Rcout << "2.For; if; i=" << i << " ; rndWeight[" << i << "]=" << rndWeight[i] << " ; maxI=" << maxI << std::endl;
         } else {
           rndWeight[i] = 0;
+          Rcout << "2.For; else; i=" << i << " ; rndWeight[" << i << "]=" << rndWeight[i] << " ; maxI=" << maxI << std::endl;
         }
       }
     }
