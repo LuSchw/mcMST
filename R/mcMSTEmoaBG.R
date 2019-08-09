@@ -85,6 +85,7 @@ mcMSTEmoaBG = function(instance,
     instance$getRandomMST()
   })
   print("population is generated")
+  print(population)
 
   res = ecr::ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
     minimize = rep(TRUE, n.objectives),
