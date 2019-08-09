@@ -1062,7 +1062,7 @@ public:
     std::vector<double> rndWeight = this->getRandomWeights();
     unsigned int W = this->getW();
     if (!scalarize) {
-      int max = 0;
+      double max = 0;
       int maxI = -1;
       for (unsigned int i = 0; i < W; ++i) {
         Rcout << "1.For; Before IF; i=" << i << " ; rndWeight[" << i << "]=" << rndWeight[i] << " >? max=" << max << " ; maxI=" << maxI << std::endl;
