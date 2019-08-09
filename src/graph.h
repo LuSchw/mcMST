@@ -83,7 +83,7 @@ public:
     rndWeight[W-1] = max;
     Rcout << "Finally: max="<< max << std::endl;
     std::random_shuffle(rndWeight.begin(), rndWeight.end());
-    for (unsigned int i = 0; i < W - 1; ++i) {
+    for (unsigned int i = 0; i < W ; ++i) {
       Rcout << "Shuffeled: rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
     return rndWeight;
