@@ -71,15 +71,21 @@ public:
 
   std::vector<double> getRandomWeights() {
     Rcout << "getRandomWeights() is entered " << std::endl;
-    int W = this->getW();
+    unsigned int W = this->getW();
     std::vector<double> rndWeight(W);
     double max = 1;
-    for (int i = 0; i < W - 1; ++i) {
+    for (unsigned int i = 0; i < W - 1; ++i) {
       rndWeight[i] = (double)rand() / (double)RAND_MAX * max;
+      Rcout << "Before: i=" << i << " ; max="<< max << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
       max -= rndWeight[i];
+      Rcout << "After: i=" << i << " ; max="<< max << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
     rndWeight[W-1] = max;
+    Rcout << "Finally: max="<< max << std::endl;
     std::random_shuffle(rndWeight.begin(), rndWeight.end());
+    for (unsigned int i = 0; i < W - 1; ++i) {
+      Rcout << "Shuffeled: rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
+    }
     return rndWeight;
   }
 
