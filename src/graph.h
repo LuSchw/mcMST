@@ -484,36 +484,36 @@ public:
   }
 
   Graph getRandomMSTKruskal() {
-    Rcout << "In Graph Class" << std::endl;
+    //Rcout << "In Graph Class" << std::endl;
     Graph initialTree(this->getV(), this->getW(), false);
-    Rcout << "Initial tree" << std::endl;
+    //Rcout << "Initial tree" << std::endl;
     UnionFind UF(this->V);
-    Rcout << "UF" << std::endl;
+    //Rcout << "UF" << std::endl;
 
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
     for (int u = 1; u <= this->V; ++u) {
-      Rcout << "u = " << u << " <= " << this->V << " = V: " << (u <= this->V) << std::endl;
+      //Rcout << "u = " << u << " <= " << this->V << " = V: " << (u <= this->V) << std::endl;
       for (unsigned int j = 0; j < this->adjList[u].size(); ++j) {
-          Rcout << "j = " << j << " < " << this->adjList[u].size() << " = adjList[u].size(): " << (j < this->adjList[u].size()) << std::endl;
+        //Rcout << "j = " << j << " < " << this->adjList[u].size() << " = adjList[u].size(): " << (j < this->adjList[u].size()) << std::endl;
         int v = this->adjList[u][j].first;
-        Rcout << "v = " << v << std::endl;
-        Rcout << "2.: u = " << u << " < " << v << " = v: " << (u < v) << std::endl;
+        //Rcout << "v = " << v << std::endl;
+        //Rcout << "2.: u = " << u << " < " << v << " = v: " << (u < v) << std::endl;
         if (u < v) {
-          Rcout << "3.: u = " << u << " < " << v << " = v: " << (u < v) << std::endl;
+          //Rcout << "3.: u = " << u << " < " << v << " = v: " << (u < v) << std::endl;
           // FIXME: ugly as sin!
           std::vector<double> w = this->adjList[u][j].second;
           //Rcout << "w = <" << w << std::endl;
           double costs = (double)rand() / (double)RAND_MAX;
-          Rcout << "costs = " << costs << std::endl;
+          //Rcout << "costs = " << costs << std::endl;
           edgelist.push_back({costs, {{u, v}, w}});
         }
       }
     }
-    Rcout << "For-loops done " << std::endl;
+    //Rcout << "For-loops done " << std::endl;
     // sort edges in increasing order
     sort(edgelist.begin(), edgelist.end());
 
-    Rcout << "Edges sorted" << std::endl;
+    //Rcout << "Edges sorted" << std::endl;
     // Edge iterator
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>>::iterator it;
     for (it = edgelist.begin(); it != edgelist.end(); it++) {
@@ -521,11 +521,11 @@ public:
       int u = it->second.first.first;
       int v = it->second.first.second;
       std::vector<double> w = it->second.second;
-      Rcout << w[0] << " ; " << w[1] << std::endl;
+      //Rcout << w[0] << " ; " << w[1] << std::endl;
 
       if (!UF.find(u, v)) {
 
-        Rcout << w[0] << " ; " << w[1] << " Added!" << std::endl;
+        //Rcout << w[0] << " ; " << w[1] << " Added!" << std::endl;
         // link components
         initialTree.addEdge(u, v, w);
         // merge components
@@ -539,7 +539,7 @@ public:
       }
     }
 
-    Rcout << "2nd For-Loop Done" << std::endl;
+    //Rcout << "2nd For-Loop Done" << std::endl;
     return initialTree;
   }
 
