@@ -83,9 +83,9 @@ mcMSTEmoaBG = function(instance,
   # a list of random spanning trees
   population = lapply(1:mu, function(i) {
     instance$getRandomMST()
+    print(population[i])
   })
   print("population is generated")
-  print(population)
 
   res = ecr::ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
     minimize = rep(TRUE, n.objectives),
