@@ -83,7 +83,7 @@ mcMSTEmoaBG = function(instance,
   # a list of random spanning trees
   population = lapply(1:mu, function(i) {
     instance$getRandomMST()
-    print(population[i])
+    cat("population is generated", i)
   })
   print("population is generated")
 
