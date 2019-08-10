@@ -1064,7 +1064,7 @@ public:
       rndWeight = this->getRandomWeights();
     } else {
       unsigned int W = this->getW();
-      unsigned int chWeight = (getRandomNumber(W) - 1)
+      unsigned int chWeight = (getRandomNumber(W) - 1);
       for (unsigned int i = 0; i < W; ++i){
         Rcout << "Before: i="<< i << " ; chWeight=" << chWeight << std::endl;
         if(i == chWeight){
