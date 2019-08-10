@@ -1066,12 +1066,13 @@ public:
       unsigned int W = this->getW();
       unsigned int chWeight = (getRandomNumber(W) - 1)
       for (unsigned int i = 0; i < W; ++i){
+        Rcout << "Before: i="<< i << " ; chWeight=" << chWeight << std::endl;
         if(i == chWeight){
           rndWeight.push_back(1);
         } else {
           rndWeight.push_back(0);
         }
-        
+        Rcout << "After: i="<< i << " ; chWeight=" << chWeight << " ; rndWeight[i]=" << rndWeight[i] << std::endl;
       }
     }
 
