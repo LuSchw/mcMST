@@ -62,29 +62,29 @@ mcMSTEmoaBG = function(instance,
     print("graph is built")
   # get number of nodes
   n = instance$getV()
-  print("n is read")
+  #print("n is read")
   n.objectives = instance$getW()
-  print("w is read")
+  #print("w is read")
   # convert to C++ graph structure
   force(instance)
-  print("instance forced")
+  #print("instance forced")
   # default is our subgraph mutator
   mut = ecr::setup(mut, instance = instance)
-  print("mut is set up")
+  #print("mut is set up")
   if (is.null(ref.point))
     ref.point = instance$getMaxWeight() * n
-  print("refpoint is set")
+  #print("refpoint is set")
   fitness.fun = function(ind, instance) {
     ind$getSumOfEdgeWeights()
   }
-  print("fitness function is set")
+  #print("fitness function is set")
 
   # now generate an initial population, i.e.,
   # a list of random spanning trees
   population = lapply(1:mu, function(i) {
     instance$getRandomMST()
   })
-  print("population is generated")
+  #print("population is generated")
 
   res = ecr::ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
     minimize = rep(TRUE, n.objectives),
@@ -95,8 +95,8 @@ mcMSTEmoaBG = function(instance,
     terminators = list(stopOnIters(max.iter)),
     instance = instance,
     ...)
-  print("result is caculated")
+  #print("result is caculated")
   res$pareto.set = lapply(res$pareto.set, function(el) el$toEdgeList())
-  print("paretoset is appended")
+  #print("paretoset is appended")
   return(res)
 }
