@@ -1000,7 +1000,6 @@ public:
   // }
 
   Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true, bool altWeightGen = false) {
-    Rcout << "getMSTBySubgraphMutation is entered " << std::endl;
     assert(maxSelect <= this->getV());
 
     unsigned int V = this->getV();
@@ -1067,10 +1066,14 @@ public:
     if (scalarize){
       if (altWeightGen) {
         rndWeight = this->getRandomWeightsAlternative();
+        Rcout << "1" << std::endl;
       } else {
         rndWeight = this->getRandomWeights();
+        Rcout << "2" << std::endl;
       }
     } else {
+
+      Rcout << "3" << std::endl;
       unsigned int W = this->getW();
       unsigned int chWeight = (getRandomNumber(W) - 1);
       for (unsigned int i = 0; i < W; ++i) {
