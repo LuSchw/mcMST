@@ -1063,17 +1063,14 @@ public:
 
     // now we need to rewire the edges
     std::vector<double> rndWeight;
+    Rcout << scalarize << altWeightGen << std::endl;
     if (scalarize){
       if (altWeightGen) {
         rndWeight = this->getRandomWeightsAlternative();
-        Rcout << "1" << std::endl;
       } else {
         rndWeight = this->getRandomWeights();
-        Rcout << "2" << std::endl;
       }
     } else {
-
-      Rcout << "3" << std::endl;
       unsigned int W = this->getW();
       unsigned int chWeight = (getRandomNumber(W) - 1);
       for (unsigned int i = 0; i < W; ++i) {

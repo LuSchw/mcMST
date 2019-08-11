@@ -70,7 +70,7 @@ mcMSTEmoaBG = function(instance,
   force(instance)
   print("instance forced")
   # default is our subgraph mutator
-  mut = ecr::setup(mut, instance = instance) #, scalarize = scalarize, altWeightGen = altWeightGen)
+  mut = ecr::setup(mut, instance = instance, scalarize = scalarize, altWeightGen = altWeightGen)
 
 
   print("mut is set up")
