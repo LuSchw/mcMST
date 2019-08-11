@@ -89,19 +89,23 @@ public:
     return rndWeight;
   }
 
-  std::vector<double> getRandomWeightsAlternative(){
+  std::vector<double> getRandomWeightsAlternative() {
+    Rcout << "getRandomWeightsAlternative() is entered " << std::endl;
     int W = this->getW();
     // now sample n random weights in [0, 1]
     std::vector<double> rndWeight(W);
     double s = 0;
     for (int i = 0; i < W; ++i) {
       rndWeight[i] = (double)rand() / (double)RAND_MAX;
+      Rcout << "Before: i=" << i << " ; s="<< s << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
       s += rndWeight[i];
+      Rcout << "After: i=" << i << " ; s="<< s << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
 
     // divide all weights by their sum, so their sum is 1
     for (int i = 0; i < this->getW(); ++i) {
       rndWeight[i] /= s;
+      Rcout << "Final: rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
     return rndWeight;
   }
@@ -995,7 +999,7 @@ public:
   //   return mst2;
   // }
 
-  Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
+  Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true, bool altWeightGen = false) {
     //Rcout << "getMSTBySubgraphMutation is entered " << std::endl;
     assert(maxSelect <= this->getV());
 
@@ -1060,14 +1064,18 @@ public:
 
     // now we need to rewire the edges
     std::vector<double> rndWeight;
-    if(scalarize){
-      rndWeight = this->getRandomWeights();
+    if (scalarize){
+      if (altWeightGen) {
+        rndWeight = this->getRandomWeightsAlternative();
+      } else {
+        rndWeight = this->getRandomWeights();
+      }
     } else {
       unsigned int W = this->getW();
       unsigned int chWeight = (getRandomNumber(W) - 1);
-      for (unsigned int i = 0; i < W; ++i){
+      for (unsigned int i = 0; i < W; ++i) {
         //Rcout << "Before: i="<< i << " ; chWeight=" << chWeight << std::endl;
-        if(i == chWeight){
+        if (i == chWeight) {
           rndWeight.push_back(1);
         } else {
           rndWeight.push_back(0);
@@ -1140,9 +1148,9 @@ public:
       while (ssline.good()) {
         std::getline(ssline, var,',');
         std::stringstream ssvar(var);
-        if (i == 0){
+        if (i == 0) {
           ssvar >> u;
-        } else if (i == 1){
+        } else if (i == 1) {
           ssvar >> v;
         } else {
           ssvar >> wvar;

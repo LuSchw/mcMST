@@ -55,6 +55,7 @@ mcMSTEmoaBG = function(instance,
   ref.point = NULL,
   max.iter = 100L,
   scalarize = FALSE,
+  alternativeWeightGeneration = FALSE,
   ...) {
 
   if (inherits(instance, "grapherator"))
@@ -69,7 +70,7 @@ mcMSTEmoaBG = function(instance,
   force(instance)
   #print("instance forced")
   # default is our subgraph mutator
-  mut = ecr::setup(mut, instance = instance, scalarize = scalarize)
+  mut = ecr::setup(mut, instance = instance, scalarize = scalarize, altWeightGen = altWeightGen)
   #print("mut is set up")
   if (is.null(ref.point))
     ref.point = instance$getMaxWeight() * n

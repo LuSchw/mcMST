@@ -159,7 +159,7 @@ mutKEdgeExchange = makeMutator(
 mutSubgraphMST = makeMutator(
   mutator = function(ind, sigma = floor(ind$getV() / 2L), scalarize = FALSE, instance = NULL) {
     n.select = sample(3:sigma, 1L)
-    instance$getMSTBySubgraphMutation(ind, n.select, scalarize = scalarize)
+    instance$getMSTBySubgraphMutation(ind, n.select, scalarize = scalarize, altWeightGen = altWeightGen)
   },
   supported = "custom"
 )
