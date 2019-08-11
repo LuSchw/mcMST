@@ -1334,8 +1334,8 @@ Graph getMSTBySubforestMutationR(Graph* g, Graph* mst, int maxDrop) {
   return mstnew;
 }
 
-Graph getMSTBySubgraphMutationR(Graph* g, Graph* mst, int maxSelect, bool scalarize) {
-  Graph mstnew = g->getMSTBySubgraphMutation(*mst, maxSelect, scalarize);
+Graph getMSTBySubgraphMutationR(Graph* g, Graph* mst, int maxSelect, bool scalarize, bool altWeightGen) {
+  Graph mstnew = g->getMSTBySubgraphMutation(*mst, maxSelect, scalarize, altWeightGen);
   return mstnew;
 }
 
