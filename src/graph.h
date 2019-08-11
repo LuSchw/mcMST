@@ -1000,7 +1000,7 @@ public:
   // }
 
   Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true, bool altWeightGen = false) {
-    //Rcout << "getMSTBySubgraphMutation is entered " << std::endl;
+    Rcout << "getMSTBySubgraphMutation is entered " << std::endl;
     assert(maxSelect <= this->getV());
 
     unsigned int V = this->getV();
