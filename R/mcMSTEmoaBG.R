@@ -70,7 +70,12 @@ mcMSTEmoaBG = function(instance,
   force(instance)
   #print("instance forced")
   # default is our subgraph mutator
-  mut = ecr::setup(mut, instance = instance, scalarize = scalarize, altWeightGen = altWeightGen)
+  if (mut == mutSubgraphMST) {
+    mut = ecr::setup(mut, instance = instance, scalarize = scalarize, altWeightGen = altWeightGen)
+  } else {
+    mut = ecr::setup(mut, instance = instance)
+  }
+
   #print("mut is set up")
   if (is.null(ref.point))
     ref.point = instance$getMaxWeight() * n
