@@ -59,7 +59,7 @@ mcMSTEmoaBG = function(instance,
 
   if (inherits(instance, "grapherator"))
     instance = grapheratorToGraph(instance)
-    print("graph is built")
+  #print("graph is built")
   # get number of nodes
   n = instance$getV()
   #print("n is read")
@@ -69,7 +69,7 @@ mcMSTEmoaBG = function(instance,
   force(instance)
   #print("instance forced")
   # default is our subgraph mutator
-  mut = ecr::setup(mut, instance = instance)
+  mut = ecr::setup(mut, instance = instance, scalarize = scalarize)
   #print("mut is set up")
   if (is.null(ref.point))
     ref.point = instance$getMaxWeight() * n
