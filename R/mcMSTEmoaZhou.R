@@ -28,7 +28,9 @@ mcMSTEmoaZhou = function(instance,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
   ref.point = NULL, max.iter = 100L, ...) {
 
-  #n = instance$getV()
+  if (inherits(instance, "grapherator"))
+    instance = grapheratorToGraph(instance)
+
   converter = new(RepresentationConverter)
 
   force(instance)
