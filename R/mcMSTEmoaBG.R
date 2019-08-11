@@ -55,7 +55,7 @@ mcMSTEmoaBG = function(instance,
   ref.point = NULL,
   max.iter = 100L,
   scalarize = FALSE,
-  alternativeWeightGeneration = FALSE,
+  altWeightGen = FALSE,
   ...) {
 
   if (inherits(instance, "grapherator"))
