@@ -28,7 +28,7 @@ mcMSTEmoaZhou = function(instance,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
   ref.point = NULL, max.iter = 100L, ...) {
 
-  n = instance$getV()
+  #n = instance$getV()
   converter = new(RepresentationConverter)
 
   force(instance)
