@@ -31,6 +31,7 @@ mcMSTEmoaZhou = function(instance,
   if (inherits(instance, "grapherator"))
     instance = grapheratorToGraph(instance)
 
+  n = instance$getV()
   converter = new(RepresentationConverter)
 
   force(instance)
