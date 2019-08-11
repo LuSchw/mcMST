@@ -70,42 +70,42 @@ public:
   }
 
   std::vector<double> getRandomWeights() {
-    Rcout << "getRandomWeights() is entered " << std::endl;
+    //Rcout << "getRandomWeights() is entered " << std::endl;
     unsigned int W = this->getW();
     std::vector<double> rndWeight(W);
     double max = 1;
     for (unsigned int i = 0; i < W - 1; ++i) {
       rndWeight[i] = (double)rand() / (double)RAND_MAX * max;
-      Rcout << "Before: i=" << i << " ; max="<< max << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
+      //Rcout << "Before: i=" << i << " ; max="<< max << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
       max -= rndWeight[i];
-      Rcout << "After: i=" << i << " ; max="<< max << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
+      //Rcout << "After: i=" << i << " ; max="<< max << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
     rndWeight[W-1] = max;
-    Rcout << "Finally: max="<< max << std::endl;
+    //Rcout << "Finally: max="<< max << std::endl;
     std::random_shuffle(rndWeight.begin(), rndWeight.end());
     for (unsigned int i = 0; i < W ; ++i) {
-      Rcout << "Shuffeled: rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
+      //Rcout << "Shuffeled: rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
     return rndWeight;
   }
 
   std::vector<double> getRandomWeightsAlternative() {
-    Rcout << "getRandomWeightsAlternative() is entered " << std::endl;
+    //Rcout << "getRandomWeightsAlternative() is entered " << std::endl;
     int W = this->getW();
     // now sample n random weights in [0, 1]
     std::vector<double> rndWeight(W);
     double s = 0;
     for (int i = 0; i < W; ++i) {
       rndWeight[i] = (double)rand() / (double)RAND_MAX;
-      Rcout << "Before: i=" << i << " ; s="<< s << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
+      //Rcout << "Before: i=" << i << " ; s="<< s << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
       s += rndWeight[i];
-      Rcout << "After: i=" << i << " ; s="<< s << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
+      //Rcout << "After: i=" << i << " ; s="<< s << " ; rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
 
     // divide all weights by their sum, so their sum is 1
     for (int i = 0; i < this->getW(); ++i) {
       rndWeight[i] /= s;
-      Rcout << "Final: rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
+      //Rcout << "Final: rndWeight[" << i << "]=" << rndWeight[i] << std::endl;
     }
     return rndWeight;
   }
@@ -1063,7 +1063,7 @@ public:
 
     // now we need to rewire the edges
     std::vector<double> rndWeight;
-    Rcout << scalarize << altWeightGen << std::endl;
+    //Rcout << scalarize << altWeightGen << std::endl;
     if (scalarize){
       if (altWeightGen) {
         rndWeight = this->getRandomWeightsAlternative();
