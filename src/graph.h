@@ -428,7 +428,7 @@ public:
     unsigned int V = this->getV();
     std::vector<bool> visited(V + 1);
 
-    for (unsigned int node = 1; node <= V; ++node) {
+    for (int node = 1; node <= V; ++node) {
       // already visited, i.e., in some component?
       if (visited[node])
         continue;
